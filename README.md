@@ -3,7 +3,7 @@
 ## 说明
 阿里云CDN API参考手册：https://help.aliyun.com/document_detail/27155.html
 
-http 请求使用 Guzzle 三方库（v5.3），具体文档可参考：https://github.com/guzzle/guzzle。
+http 请求使用 Guzzle 三方库（v5.3），具体文档可参考：https://github.com/guzzle/guzzle
 
 ## 安装
 ```
