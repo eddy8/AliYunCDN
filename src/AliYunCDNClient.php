@@ -86,13 +86,10 @@ class AliYunCDNClient
         $this->common_params = $common_params;
     }
 
-    protected function getQuery($params, $encode = false)
+    protected function getQuery($params)
     {
-        if ($encode === true) {
-            $params = array_map('rawurlencode', $params);
-        }
         ksort($params);
-        return http_build_query($params);
+        return http_build_query($params, '', '&', PHP_QUERY_RFC3986);
     }
 
     protected function getSign($query, $method = "GET")
