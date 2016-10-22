@@ -10,6 +10,9 @@ class AliYunCDNClient
 
     protected $url = 'https://cdn.aliyuncs.com';
 
+    /**
+     * @var \GuzzleHttp\Client Http Client
+     */
     protected $httpClient;
 
     protected $common_params;
@@ -33,11 +36,15 @@ class AliYunCDNClient
 
     public function __call($name, $arguments)
     {
-        if (!is_array($arguments[0])) {
-            throw new \InvalidArgumentException('the type of argument must be array.');
+        if (empty($arguments)) {
+            $origin_params = array_merge(['Action' => $name, 'AccessKeyId' => $this->key]);
+        } else {
+            if (isset($arguments[0]) && is_array($arguments[0])) {
+                $origin_params = array_merge(['Action' => $name, 'AccessKeyId' => $this->key], $arguments[0]);
+            } else {
+                throw new \InvalidArgumentException('the type of argument must be array.');
+            }
         }
-
-        $origin_params = array_merge(['Action' => $name, 'AccessKeyId' => $this->key], $arguments[0]);
         $params = array_merge($this->common_params, $origin_params);
 
         $query = $this->getQuery($params);
