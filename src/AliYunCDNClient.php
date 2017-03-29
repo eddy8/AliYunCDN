@@ -19,8 +19,6 @@ class AliYunCDNClient
 
     function __construct($key = '', $secret = '')
     {
-        date_default_timezone_set('UTC');
-
         $this->key = $key;
         $this->secret = $secret;
         $this->httpClient = new \GuzzleHttp\Client();
@@ -58,6 +56,8 @@ class AliYunCDNClient
         } catch (\GuzzleHttp\Exception\TransferException $e) {
             $response = $e->getResponse();
             return $response;
+        } catch (\Exception $e) {
+            return false;
         }
     }
 
