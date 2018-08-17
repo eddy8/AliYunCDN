@@ -1,6 +1,8 @@
 <?php
 namespace eddy;
 
+use GuzzleHttp\Client;
+
 class AliYunCDNClient
 {
     public $timeout = 10;
@@ -17,11 +19,11 @@ class AliYunCDNClient
 
     protected $common_params;
 
-    function __construct($key = '', $secret = '')
+    public function __construct($key = '', $secret = '')
     {
         $this->key = $key;
         $this->secret = $secret;
-        $this->httpClient = new \GuzzleHttp\Client();
+        $this->httpClient = new Client();
         $this->common_params = [
             'Format' => 'JSON',
             'Version' => '2014-11-11',
@@ -33,6 +35,25 @@ class AliYunCDNClient
     }
 
     public function __call($name, $arguments)
+    {
+        $query = $this->buildQuery($name, $arguments);
+
+        try {
+            $response = $this->httpClient->get(
+                $this->url . '/?' . $query,
+                ['timeout' => $this->timeout, 'verify' => false]
+            );
+            return $response;
+        } catch (\GuzzleHttp\Exception\TransferException $e) {
+            $response = $e->getResponse();
+            return $response;
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+
+    public function buildQuery($name, $arguments)
     {
         if (empty($arguments)) {
             $origin_params = array_merge(['Action' => $name, 'AccessKeyId' => $this->key]);
@@ -48,22 +69,17 @@ class AliYunCDNClient
         $query = $this->getQuery($params);
         $origin_params['Signature'] = $this->getSign($query);
 
-        $query = $this->getQuery(array_merge($this->common_params, $origin_params));
-
-        try {
-            $response = $this->httpClient->get($this->url . '/?' . $query, ['timeout' => $this->timeout, 'verify' => false]);
-            return $response;
-        } catch (\GuzzleHttp\Exception\TransferException $e) {
-            $response = $e->getResponse();
-            return $response;
-        } catch (\Exception $e) {
-            return false;
-        }
+        return $this->getQuery(array_merge($this->common_params, $origin_params));
     }
 
     public function setUrl($url)
     {
         $this->url = $url;
+    }
+
+    public function getUrl()
+    {
+        return $this->url;
     }
 
     public function setKey($key)
@@ -84,6 +100,11 @@ class AliYunCDNClient
     public function setCommonParams($common_params)
     {
         $this->common_params = $common_params;
+    }
+
+    public function setHttpClient($client)
+    {
+        $this->httpClient = $client;
     }
 
     protected function getQuery($params)
