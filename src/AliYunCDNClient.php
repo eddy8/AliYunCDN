@@ -24,6 +24,8 @@ class AliYunCDNClient
         $this->key = $key;
         $this->secret = $secret;
         $this->httpClient = new Client();
+        $orginTimeZone = date_default_timezone_get();
+        date_default_timezone_set('UTC');
         $this->common_params = [
             'Format' => 'JSON',
             'Version' => '2014-11-11',
@@ -32,6 +34,7 @@ class AliYunCDNClient
             'SignatureVersion' => '1.0',
             'SignatureNonce' => uniqid(),
         ];
+        date_default_timezone_set($orginTimeZone);
     }
 
     public function __call($name, $arguments)

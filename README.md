@@ -12,8 +12,6 @@ composer require eddy/aliyuncdn
 
 ## 使用方法
 ```
-// 时区设置
-date_default_timezone_set('UTC');
 // 实例化客户端
 $client = new eddy\AliYunCDNClient('key', 'secret');
 // 发送请求
